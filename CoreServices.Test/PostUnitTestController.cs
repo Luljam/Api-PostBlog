@@ -280,5 +280,51 @@ namespace CoreServices.Test
             Assert.IsType<NotFoundResult>(data);
         }
         #endregion
+
+
+        #region Delete Post
+        [Fact]
+        public async void Task_Delete_Post_Return_OkResult()
+        {
+            //Arrange
+            var controller = new PostController(repository);
+            var postId = 2;
+
+            //Act
+            var data = await controller.DeletePost(postId);
+
+            //Assert
+            Assert.IsType<OkResult>(data);
+        }
+        
+        [Fact]
+        public async void Task_Delete_Post_NotFoundResult()
+        {
+            //Arrange
+            var controller = new PostController(repository);
+            var postId = 5; // post inexistente
+
+            //Act
+            var data = await controller.DeletePost(postId);
+
+            //Assert
+            Assert.IsType<NotFoundResult>(data);
+        }
+
+        [Fact]
+        public async void Task_Delete_Return_BadRequestResult()
+        {
+            //Arrange
+            var controller = new PostController(repository);
+            int? postId = null;
+
+            //Act
+            var data = await controller.DeletePost(postId);
+
+            //Assert
+            Assert.IsType<BadRequestResult>(data);
+        }
+
+        #endregion
     }
 }
