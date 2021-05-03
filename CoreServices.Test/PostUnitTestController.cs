@@ -5,6 +5,7 @@ using CoreServices.ViewModel;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using Xunit;
 
@@ -137,7 +138,70 @@ namespace CoreServices.Test
             Assert.Equal("Teste de titulo 2", post[1].Title);
             Assert.Equal("Teste Descrição 2", post[1].Description);
         }
+        #endregion
 
+        #region Add New Blog
+        [Fact]
+        public async void Task_Add_ValidData_Return_OkResult()
+        {
+            //Arrange
+            var controller = new PostController(repository);
+            var post = new Post()
+            {
+                Title = "Test Titulo 3",
+                Description = "Test Descrição 3",
+                CategoryId = 2,
+                CreatedDate = DateTime.Now
+            };
+
+            //Act
+            var data = await controller.AddPost(post);
+
+            //Assert
+            Assert.IsType<OkObjectResult>(data);
+        }
+
+        [Fact]
+        public async void Task_Add_InvalidData_Return_BadRequest()
+        {
+            //Arrange
+            var controller = new PostController(repository);
+            Post post = new Post()
+            {
+                Title = "Test Titulo com mais de 20 caracteres",
+                Description = "Test Descrição 3",
+                CategoryId = 3,
+                CreatedDate = DateTime.Now
+            };
+
+            // Act
+            var data = await controller.AddPost(post);
+
+            //Assert
+            Assert.IsType<BadRequestResult>(data);
+        }
+
+        [Fact]
+        public async void Task_Add_ValidData_MatchResult()
+        {
+            //Arrange
+            var controller = new PostController(repository);
+            var post = new Post()
+            {
+                Title = "Test Titulo 4",
+                Description = "Test Descrição 4",
+                CategoryId = 2,
+                CreatedDate = DateTime.Now
+            };
+
+            //Act
+            var data = await controller.AddPost(post);
+
+            //Assert
+            Assert.IsType<OkObjectResult>(data);
+            var okResult = data.Should().BeOfType<OkObjectResult>().Subject;
+            Assert.Equal(3, okResult.Value);
+        }
         #endregion
     }
 }
