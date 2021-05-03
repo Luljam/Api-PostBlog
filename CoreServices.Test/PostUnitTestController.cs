@@ -203,5 +203,82 @@ namespace CoreServices.Test
             Assert.Equal(3, okResult.Value);
         }
         #endregion
+
+        #region Update Existing Blog
+        [Fact]
+        public async void Task_Update_ValidData_Return_OkResult()
+        {
+            //Arrange
+            var controller = new PostController(repository);
+            var postId = 2;
+
+            //Act
+            var existingPost = await controller.GetPost(postId);
+            var okResult = existingPost.Should().BeOfType<OkObjectResult>().Subject;
+            var result = okResult.Value.Should().BeAssignableTo<PostViewModel>().Subject;
+
+            var post = new Post();
+            post.Title = "Test Titulo 2 Upda";
+            post.Description = result.Description;
+            post.CategoryId = result.CategoryId;
+            post.CreatedDate = result.CreatedDate;
+
+            var updateData = await controller.UpdatePost(post);
+
+            //Assert
+            Assert.IsType<OkResult>(updateData);
+        }
+
+        [Fact]
+        public async void Task_Update_InvalidData_Return_BadRequest()
+        {
+            //Arrange
+            var controller = new PostController(repository);
+            var postId = 2;
+
+            //Act
+            var existingPost = await controller.GetPost(postId);
+            var okResult = existingPost.Should().BeOfType<OkObjectResult>().Subject;
+            var result = okResult.Value.Should().BeAssignableTo<PostViewModel>().Subject;
+
+            var post = new Post();
+            post.Title = "Test Titulo Mais de 20 caracteres";
+            post.Description = result.Description;
+            post.CategoryId = result.CategoryId;
+            post.CreatedDate = result.CreatedDate;
+
+            var data = await controller.UpdatePost(post);
+
+            //Assert
+            Assert.IsType<BadRequestResult>(data);
+
+        }
+
+
+        [Fact]
+        public async void Task_Update_InvalidData_Return_NotFound()
+        {
+            //Arrange
+            var controller = new PostController(repository);
+            var postId = 2;
+
+            //Act
+            var existingPost = await controller.GetPost(postId);
+            var okResult = existingPost.Should().BeOfType<OkObjectResult>().Subject;
+            var result = okResult.Value.Should().BeAssignableTo<PostViewModel>().Subject;
+
+            var post = new Post();
+            post.PostId = 5; // Id não existe
+            post.Title = "Test Title More Than 20 Characteres";
+            post.Description = result.Description;
+            post.CategoryId = result.CategoryId;
+            post.CreatedDate = result.CreatedDate;
+
+            var data = await controller.UpdatePost(post);
+
+            //Assert
+            Assert.IsType<NotFoundResult>(data);
+        }
+        #endregion
     }
 }
