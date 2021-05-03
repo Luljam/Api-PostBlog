@@ -32,7 +32,7 @@ namespace CoreServices.Test
                 );
             context.Post.AddRange(
                 new Post() { Title = "Teste de titulo 1", Description = "Teste Descrição 1", CategoryId=2, CreatedDate = DateTime.Now},
-                new Post() { Title = "Teste de título 2", Description = "Teste Descrição 2", CategoryId=3, CreatedDate = DateTime.Now}
+                new Post() { Title = "Teste de titulo 2", Description = "Teste Descrição 2", CategoryId=3, CreatedDate = DateTime.Now}
                 );
             context.SaveChanges();
         }

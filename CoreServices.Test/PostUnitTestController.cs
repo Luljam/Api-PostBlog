@@ -5,6 +5,7 @@ using CoreServices.ViewModel;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using Xunit;
 
 namespace CoreServices.Test
@@ -47,7 +48,7 @@ namespace CoreServices.Test
             var data = await controller.GetPost(postId);
 
             //Assert
-            Assert.IsAssignableFrom<OkObjectResult>(data);
+            Assert.IsType<OkObjectResult>(data);
         }
 
         [Fact]
@@ -61,7 +62,7 @@ namespace CoreServices.Test
             var data = await controller.GetPost(postId);
 
             //Assert
-            Assert.IsAssignableFrom<NotFoundResult>(data);
+            Assert.IsType<NotFoundResult>(data);
         }
 
         [Fact]
@@ -75,7 +76,7 @@ namespace CoreServices.Test
             var data = await controller.GetPost(postId);
 
             //Assert
-            Assert.IsAssignableFrom<OkObjectResult>(data);
+            Assert.IsType<OkObjectResult>(data);
 
             var okResult = data.Should().BeOfType<OkObjectResult>().Subject;
             var post = okResult.Value.Should().BeAssignableTo<PostViewModel>().Subject;
@@ -86,6 +87,56 @@ namespace CoreServices.Test
         #endregion
 
         #region Get All
+        [Fact]
+        public async void Task_GetPosts_Return_OkResult()
+        {
+            //Arrange
+            var controller = new PostController(repository);
+
+            //Act
+            var data = await controller.GetPosts();
+
+            //Assert
+            Assert.IsType<OkObjectResult>(data);
+        }
+
+        [Fact]
+        public void Task_GetPosts_Return_BadRequestResult()
+        {
+            //Arrange
+            var controller = new PostController(repository);
+
+            //Act
+            var data = controller.GetPosts();
+            data = null;
+            if (data != null)
+            {
+                //Assert
+                Assert.IsType<BadRequestResult>(data);
+            }
+        }
+
+        [Fact]
+        public async void Task_GetPosts_MatchResult()
+        {
+            //Arrange
+            var controller = new PostController(repository);
+
+            //Act
+            var data = await controller.GetPosts();
+
+            //Assert
+            Assert.IsType<OkObjectResult>(data);
+
+            var okResult = data.Should().BeOfType<OkObjectResult>().Subject;
+            var post = okResult.Value.Should().BeAssignableTo<List<PostViewModel>>().Subject;
+
+            Assert.Equal("Teste de titulo 1", post[0].Title);
+            Assert.Equal("Teste Descrição 1", post[0].Description);
+
+            Assert.Equal("Teste de titulo 2", post[1].Title);
+            Assert.Equal("Teste Descrição 2", post[1].Description);
+        }
 
         #endregion
     }
